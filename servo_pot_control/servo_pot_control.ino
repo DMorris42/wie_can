@@ -9,7 +9,7 @@
  * Text following a double forward slash (//) or in a section like this one 
  * are comments, and are ignored when we compile our code.
  * 
- * Author: WiE CAN, University of Canterbury
+ * Author: Daniel Morris, University of Canterbury for WiE CAN
  * Last modified: 15 Jan 2019
  */
 
@@ -31,12 +31,22 @@ int servo_pin = 6;  // Digital pin that the servo motor is connected to.
 
 // Our code starts running from here
 void setup() {
-    myservo.attach(servo_pin);  // Indicates that the servo is connected to pin 9
-                                // Links this pin to the servo object we created above.
+    Serial.begin(9600);             // Start the USB serial port. This allows us to print out
+                                    // information on the computer.
+
+    Serial.println("Starting...");  // Print out the text "Starting..." on the serial monitor 
+                                    // (the magnifying glass in the top-right corner).
+                                    // The 'ln' at the end of 'println' means that a newline will
+                                    // be added, so that the next print/println command will print 
+                                    // on a new line in the serial monitor. If you don't want a newline
+                                    // added, you can use Serial.print() instead.
+                                
+    myservo.attach(servo_pin);      // Indicates that the servo is connected to pin 9
+                                    // Links this pin to the servo object we created above.
                         
-    pinMode(pot_pin, INPUT);    // Indicates that the pot pin is an input - the 
-                                // microcontroller should read in electricity on this
-                                // pin, rather than output an electrical signal.
+    pinMode(pot_pin, INPUT);        // Indicates that the pot pin is an input - the 
+                                    // microcontroller should read in electricity on this
+                                    // pin, rather than output an electrical signal.
 }
 
 // This is run after setup, and loops around forever
@@ -44,6 +54,7 @@ void loop() {
     val = analogRead(pot_pin);           // Read the value of the potentiometer (value between 0 and 1023)
     val = map(val, 0, 1023, 0, 180);     // Scale the readung to use it with the servo (value between 0 and 180)
     myservo.write(val);                  // Set the servo position according to the scaled value
+    Serial.println(val);                 // Print out the value sent to the servo 
     delay(5);                            // Wait for the servo to get to the desired position
 }
 

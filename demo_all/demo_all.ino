@@ -8,8 +8,8 @@
  * controlled by the push buttons. The position of the 
  * servo motor is controlled by the pot.
  * 
- * Author: WiE CAN, University of Canterbury
- * Last modified: 15 Jan 2019
+ * Author: Daniel Morris, University of Canterbury for WiE CAN
+ * Last modified: 16 Jan 2019
  */
 
 
@@ -25,7 +25,8 @@ Servo myservo;  // Create a servo 'object' to control a servo.
 // These variables are integers; they can only be positive or negative whole numbers.
 
 int pot_pin = A7;     // Analog pin number that the potentiometer is connected to.
-int val;              // Variable to store values read from the potentiometer.
+                      // Note that on the PCB it says A6; this is a typo.
+int pot_val;          // Variable to store values read from the potentiometer.
 int servo_pin = 6;    // Digital pin that the servo motor is connected to.
 int button_1_pin = 3; // Digital pin that the first button is connected to.
 int button_2_pin = 4; // Digital pin that the second button is connected to.
@@ -52,6 +53,16 @@ unsigned long t_now, t_1, t_2;
 
 // Our code starts running from here
 void setup() {
+    Serial.begin(9600);             // Start the USB serial port. This allows us to print out
+                                    // information on the computer.
+                                    
+    Serial.println("Starting...");  // Print out the text "Starting..." on the serial monitor 
+                                    // (the magnifying glass in the top-right corner).
+                                    // The 'ln' at the end of 'println' means that a newline will
+                                    // be added, so that the next print/println command will print 
+                                    // on a new line in the serial monitor. If you don't want a newline
+                                    // added, you can use Serial.print() instead.
+    
     myservo.attach(servo_pin);    // Indicates that the servo is connected to pin 9
                                   // Links this pin to the servo object we created above
                         
@@ -76,13 +87,23 @@ void setup() {
 
 // This is run after setup, and loops around forever
 void loop() {
-    val = analogRead(pot_pin);           // Read the value of the potentiometer (value between 0 and 1023)
-    val = map(val, 0, 1023, 0, 180);     // Scale the readung to use it with the servo (value between 0 and 180)
-    myservo.write(val);                  // Set the servo position according to the scaled value
+    pot_val = analogRead(pot_pin);           // Read the value of the potentiometer (value between 0 and 1023)
+    pot_val = map(pot_val, 0, 1023, 0, 180);     // Scale the readung to use it with the servo (value between 0 and 180)
+    myservo.write(pot_val);                  // Set the servo position according to the scaled value
     delay(5);                            // Wait for the servo to get to the desired position
 
     b1 = digitalRead(button_1_pin);      // Read the value of button 1
     b2 = digitalRead(button_2_pin);      // Read the value of button 2
+    
+    //Serial.println(b1);                  // We can also print out variables. In this case we will get either 1 
+                                         // or 0 printed out. A 1 indicates that the voltage on the button is 
+                                         // 'high' (around 5 volts), and a 0 indicates that the voltage is low 
+                                         // (around 0 volts). Our buttons are set up so that, when they are not 
+                                         // pressed, the voltage across them is high.
+                                         //
+                                         // This line of printing is commented out, as this will print the state of 
+                                         // the button every time this loop runs, which means a lot of printing! If you 
+                                         // want to try it out, delete the two forward slashes at the start of the line.
 
     // Note that our buttons are 'active low'. When they are pressed, they read 'false', and 
     // when not pressed, they read 'true'. So to make our LEDs turn on when the button is pressed,
@@ -106,6 +127,7 @@ void loop() {
     if ((t_now - t_1) >= 500) {                        // Check if the time difference is large enough
         t_1 = t_now;                                   // Update the recording of the last time we flashed this LED
         digitalWrite(leds[2], !digitalRead(leds[2])); // Read whether the LED is on or off, and write the opposite to it
+        Serial.println("Flash!");                     // Print out the word "Flash!" every time the LED is turned on or off
     }
 
     // Flash the fourth LED five times a second
