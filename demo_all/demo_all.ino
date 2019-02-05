@@ -77,7 +77,7 @@ void setup() {
     // out of the LEDs array, we would need to put leds[0].
     // Using a loop is a neater way of doing this for all LEDs.
     for (int i = 0; i < 4; ++i) {
-        pinMode(leds[i], OUTPUT); // Set up each LED as an input
+        pinMode(leds[i], OUTPUT); // Set up each LED as an output
     }
     
     t_now = millis(); // Read the current time, in milliseconds
